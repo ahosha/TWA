@@ -220,7 +220,8 @@ public class EntityDishes
                                                             ContractDishes.Columns.DISHESNAME,
                                                             ContractDishes.Columns.DISHESDESCRIPTION,
                                                             ContractDishes.Columns.DISHESPRICE,
-                                                            ContractDishes.Columns.DISHESURL} );
+                                                            ContractDishes.Columns.DISHESURL,
+                                                            ContractDishes.Columns.DISHESTYPE} );
         for(int i = 0; i < cursorSize; i++) {
             JSONObject disheObj = dishesListJson.getJSONObject(i);
             //Log.v(LOG_TAG, "disheObj.toString() -> " + disheObj.toString());
@@ -231,8 +232,9 @@ public class EntityDishes
             PriceCurrency = disheObj.getString(tableNamePriceCurrency);
             Description = disheObj.getString(tableNameDescription);
             ImageUrl = disheObj.getString(tableNameImageUrl);
+            DishType = disheObj.getString(tableNameDishType);
 
-            resultStrs.addRow(new Object[]{ID, Name, Description, Price, ImageUrl});
+            resultStrs.addRow(new Object[]{ID, Name, Description, Price, ImageUrl, DishType});
         }
         return resultStrs;
     }

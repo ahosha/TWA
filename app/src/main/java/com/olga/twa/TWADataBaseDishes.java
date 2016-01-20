@@ -20,7 +20,7 @@ public class TWADataBaseDishes  extends SQLiteOpenHelper {
     private static final String SQL_CREATE = "CREATE TABLE " + ContractDishes.DISHES_TABLE_NAME +
             " (_id INTEGER PRIMARY KEY, DISHESNAME TEXT , DISHESTYPE INT , DISHESPRICE DOUBLE , DISHESDESCRIPTION TEXT , DISHESURL TEXT )";
 
-    private static final String SQL_DROP = "DROP TABLE IS EXISTS " + ContractDishes.DISHES_TABLE_NAME ;
+    private static final String SQL_DROP = "DROP TABLE IF EXISTS " + ContractDishes.DISHES_TABLE_NAME ;
 
     TWADataBaseDishes(Context context) {
         super(context, ContractDishes.DATABASE_NAME, null, ContractDishes.DB_VERSION);
@@ -76,6 +76,27 @@ public class TWADataBaseDishes  extends SQLiteOpenHelper {
 
         return id;
     }
+
+    public void bulkAddNewDish(Cursor cursor) throws SQLException {
+        Log.v(LOG_TAG, "bulkAddNewDish" );
+        if (cursor.getCount() != 0 || cursor.moveToFirst()) {
+            while (cursor.moveToNext())
+            {
+                ContentValues values = new ContentValues();
+                Log.v(LOG_TAG, "bulkAddNewDish:" + ContractDishes.Columns._ID + " -> s" + cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns._ID)));
+                values.put(ContractDishes.Columns._ID, cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns._ID)));
+                values.put(ContractDishes.Columns.DISHESNAME, cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns.DISHESNAME)));
+                values.put(ContractDishes.Columns.DISHESTYPE, cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns.DISHESTYPE)));
+                values.put(ContractDishes.Columns.DISHESPRICE, cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns.DISHESPRICE)));
+                values.put(ContractDishes.Columns.DISHESDESCRIPTION, cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns.DISHESDESCRIPTION)));
+                values.put(ContractDishes.Columns.DISHESURL, cursor.getString(cursor.getColumnIndexOrThrow(ContractDishes.Columns.DISHESURL)));
+                long i = addNewDish(values);
+            }
+        }
+        cursor.close();
+        return ;
+    }
+
 
     public int deleteDishes(String id) {
         if(id == null) {

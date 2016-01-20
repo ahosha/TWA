@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import java.sql.SQLException;
+
 /**
  * Created by olga on 18/01/2016.
  */
@@ -62,7 +64,7 @@ import android.util.Log;
         }
         Log.v(LOG_TAG, "query before cursor uri:" + uri.toString());
         Cursor cursorDishes = twaDatabaseDishes.getDishes(id, projection, selection, selectionArgs, sortOrder);
-        Log.v(LOG_TAG, "query after cursor uri:" + uri.toString());
+        Log.v(LOG_TAG, "get cursor from DB" + uri.toString());
         if(!cursorDishes.moveToFirst() || cursorDishes.getCount() == 0)
         {
             // get data from URL
@@ -71,7 +73,16 @@ import android.util.Log;
             Log.v(LOG_TAG, "authorization_value ->  " + authorization_value);
             EntityDishes de = new EntityDishes();
             cursorDishes = de.getDishesCursorFormURL(authorization_value);
-            Log.v(LOG_TAG, "cursorDishes ->  " + cursorDishes.getCount());
+            Log.v(LOG_TAG, "cursorDishes  from URL !!! ->  " + cursorDishes.getCount());
+            if(cursorDishes.moveToFirst() || cursorDishes.getCount() != 0) {
+                try {
+                    twaDatabaseDishes.bulkAddNewDish(cursorDishes);
+                    Log.v(LOG_TAG, "add data to DB ->  " + cursorDishes.getCount());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
         cursorDishes.setNotificationUri(getContext().getContentResolver(), uri);
         return cursorDishes;

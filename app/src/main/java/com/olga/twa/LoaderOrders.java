@@ -25,7 +25,7 @@ public class LoaderOrders extends AsyncTaskLoader<List<EntityOrder>> {
 
     public LoaderOrders(Context context, Bundle bundle) {
         super(context);
-        authorization_value = bundle.getString("TOKEN_KEY");
+        authorization_value = bundle.getString(MainActivity.TOKEN_KEY);
         tableId_value = bundle.getString(MainActivity.ACTIVITY_TableId);
     }
 

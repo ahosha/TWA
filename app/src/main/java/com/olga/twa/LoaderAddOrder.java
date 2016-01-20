@@ -46,7 +46,7 @@ public class LoaderAddOrder extends AsyncTaskLoader<List<EntityDishes>> {
         Details = bundle.getString("Details");
         Quantity = bundle.getString("Quantity");
 
-        authorization_value = bundle.getString("TOKEN_KEY");
+        authorization_value = bundle.getString(MainActivity.TOKEN_KEY);
     }
 
     @Override

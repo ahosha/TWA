@@ -23,7 +23,7 @@ public class LoaderTables extends AsyncTaskLoader<List<TableEntity>> {
 
         public LoaderTables(Context context, Bundle bundle) {
             super(context);
-            authorization_value = bundle.getString("TOKEN_KEY");
+            authorization_value = bundle.getString(MainActivity.TOKEN_KEY);
         }
 
         @Override
