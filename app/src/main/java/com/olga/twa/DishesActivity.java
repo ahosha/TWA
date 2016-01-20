@@ -1,24 +1,20 @@
 package com.olga.twa;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-public class DishesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<EntityDishes>> {
+public class DishesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String LOG_TAG = DishesActivity.class.getSimpleName();
     String token = null;
@@ -36,10 +32,7 @@ public class DishesActivity extends AppCompatActivity implements LoaderManager.L
         Bundle extras = getIntent().getExtras();
         tableID = (String) extras.get(MainActivity.ACTIVITY_TableId);
 
-        getSupportLoaderManager().initLoader(DISHES_LIST_LOADER_ID, null, this);
-        Log.v(LOG_TAG, "initLoader done");
-
-        dishesAdapter = new AdapterDishes(this, new ArrayList<EntityDishes>());
+        dishesAdapter = new AdapterDishes(this, null, 0);
         ListView dishesListView = (ListView) findViewById(R.id.disheslistview);
         dishesListView.setAdapter(dishesAdapter);
 
@@ -55,8 +48,8 @@ public class DishesActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
-
-
+        getSupportLoaderManager().initLoader(DISHES_LIST_LOADER_ID, null, this);
+        Log.v(LOG_TAG, "initLoader done");
 
     }
 
@@ -69,22 +62,39 @@ public class DishesActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
-    @Override
-    public Loader<List<EntityDishes>> onCreateLoader(int id, Bundle args) {
+/*    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Bundle bundle = new Bundle();
         bundle.putString("TOKEN_KEY", token);
-        return new LoaderDishes(getApplicationContext(),bundle);
-    }
+        //return new LoaderDishes(getApplicationContext(),bundle);
+        return new LoaderDishes(this, ;
+    }*/
 
     @Override
-    public void onLoadFinished(Loader<List<EntityDishes>> loader, List<EntityDishes> data) {
-        dishesAdapter.setTables(data);
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        Bundle bundle = new Bundle();
+        bundle.putString("TOKEN_KEY", token);
+        Log.v(LOG_TAG, "initLoader in progress...");
+        //Uri CONTENT_URI = ContactsContract.RawContacts.CONTENT_URI;
+        return new LoaderDishes(this.getApplicationContext(), bundle); //, CONTENT_URI, null, null, null, null);
     }
 
+
+
     @Override
-    public void onLoaderReset(Loader<List<EntityDishes>> loader) {
-        dishesAdapter.setTables(new ArrayList<EntityDishes>());
+    public void onLoaderReset(Loader<Cursor> loader) {
+        dishesAdapter.swapCursor(null);
     }
+
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        //dishesAdapter.setTables(data);
+        Log.v(LOG_TAG, "onLoadFinished...");
+        dishesAdapter.swapCursor(data);
+        Log.v(LOG_TAG, "onLoadFinished done");
+    }
+
 
 
 

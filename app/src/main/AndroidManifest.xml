@@ -24,7 +24,10 @@
         <activity android:name=".DishesActivity" />
         <activity android:name=".AddOrderActivity"></activity>
 
-        <provider android:name="com.olga.twa.ProviderDishes" android:authorities="twa.disheprovider.dishes">
+        <provider android:name="com.olga.twa.ProviderDishes"
+            android:authorities="twa.disheprovider.dishes"
+            android:exported="true"
+            android:multiprocess="true" >
         </provider>
 
     </application>

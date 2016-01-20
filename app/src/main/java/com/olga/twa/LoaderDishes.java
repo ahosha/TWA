@@ -1,37 +1,72 @@
 package com.olga.twa;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.util.Log;
+import android.widget.Toast;
+
 /**
  * Created by olga on 06/01/2016.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
-import org.json.JSONException;
 
-public class LoaderDishes extends AsyncTaskLoader<List<EntityDishes>> {
+public class LoaderDishes extends CursorLoader {
+
 
     protected String authorization_value = null;
     private final String LOG_TAG = LoaderDishes.class.getSimpleName();
-    List<EntityDishes> list = null;
+    Cursor list = null;
+
+    ForceLoadContentObserver mObserver;
 
     public LoaderDishes(Context context, Bundle bundle) {
         super(context);
-        authorization_value = bundle.getString("TOKEN_KEY");
+        Log.v(LOG_TAG, "initLoader start");
+        authorization_value = bundle.getString(MainActivity.TOKEN_KEY);
+        mObserver = new ForceLoadContentObserver();
+        Log.v(LOG_TAG, "initLoader done");
+    }
+
+    public LoaderDishes(Context context, Uri uri,
+                                   String[] projection, String selection, String[] selectionArgs,
+                                   String sortOrder) {
+        super(context, uri, projection, selection, selectionArgs, sortOrder);
+        mObserver = new ForceLoadContentObserver();
+
     }
 
     @Override
-    public List<EntityDishes> loadInBackground() {
-        list = new ArrayList<EntityDishes>();
+    public Cursor loadInBackground() {
+
+/*        list = new Cursor();
         Log.v(LOG_TAG, "authorization_value ->  " + authorization_value);
         EntityDishes de = new EntityDishes();
-        return  de.getDishesListFormURL(authorization_value);
+        return  de.getDishesListFormURL(authorization_value);*/
+
+ //       ContentValues values = new ContentValues();
+/*        values.put(MyProvider.name, ((EditText) findViewById(R.id.txtName))
+                .getText().toString());*/
+
+        Log.v(LOG_TAG, "getContext().getContentResolver().query");
+
+        return getContext().getContentResolver().query(ContractDishes.CONTENT_URI,
+                new String[]{
+                    ContractDishes.Columns._ID,
+                    ContractDishes.Columns.DISHESNAME,
+                    ContractDishes.Columns.DISHESDESCRIPTION,
+                    ContractDishes.Columns.DISHESPRICE,
+                    ContractDishes.Columns.DISHESURL},
+                null, null, null, null);
+    }
+
+    void registerObserver(Cursor cursor, ContentObserver observer) {
+        cursor.registerContentObserver(mObserver);
     }
 
     @Override
@@ -46,7 +81,7 @@ public class LoaderDishes extends AsyncTaskLoader<List<EntityDishes>> {
     }
 
     @Override
-    public void deliverResult(List<EntityDishes> data) {
+    public void deliverResult(Cursor data) {
         if (isReset()) {
             // The Loader has been reset; ignore the result and invalidate the data.
             //releaseResources(data);
@@ -54,7 +89,7 @@ public class LoaderDishes extends AsyncTaskLoader<List<EntityDishes>> {
         }
         // Hold a reference to the old data so it doesn't get garbage collected.
         // We must protect it until the new data has been delivered.
-        List<EntityDishes> oldData = list;
+        Cursor oldData = list;
         list = data;
         if (isStarted()) {
             // If the Loader is in a started state, deliver the results to the client.

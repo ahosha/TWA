@@ -3,9 +3,15 @@ package com.olga.twa;
 /**
  * Created by olga on 06/01/2016.
  */
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -80,6 +87,21 @@ public class EntityDishes
         }
         return list;
     }
+
+    public Cursor getDishesCursorFormURL(String authorization_value)
+    {
+        Cursor list = null;
+        String dishesListJsonStr = getDishesListDataJson(authorization_value);
+        if (dishesListJsonStr == null) return list;
+        try {
+            list =  GetDishesEntitiesCursor(dishesListJsonStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 
     @Nullable
     private String getDishesListDataJson(String authorization_value) {
@@ -189,6 +211,32 @@ public class EntityDishes
         }
     }
 
+    private Cursor GetDishesEntitiesCursor (String JsonStr) throws JSONException {
+
+        JSONArray dishesListJson = new JSONArray(JsonStr);
+        int cursorSize = dishesListJson.length();
+        MatrixCursor resultStrs = new MatrixCursor( new String[]{
+                                                            ContractDishes.Columns._ID,
+                                                            ContractDishes.Columns.DISHESNAME,
+                                                            ContractDishes.Columns.DISHESDESCRIPTION,
+                                                            ContractDishes.Columns.DISHESPRICE,
+                                                            ContractDishes.Columns.DISHESURL} );
+        for(int i = 0; i < cursorSize; i++) {
+            JSONObject disheObj = dishesListJson.getJSONObject(i);
+            //Log.v(LOG_TAG, "disheObj.toString() -> " + disheObj.toString());
+            ID = disheObj.getString(tableNameID);
+            DishType = disheObj.getString(tableNameDishType);
+            Name = disheObj.getString(tableNameName);
+            Price = disheObj.getString(tableNamePrice);
+            PriceCurrency = disheObj.getString(tableNamePriceCurrency);
+            Description = disheObj.getString(tableNameDescription);
+            ImageUrl = disheObj.getString(tableNameImageUrl);
+
+            resultStrs.addRow(new Object[]{ID, Name, Description, Price, ImageUrl});
+        }
+        return resultStrs;
+    }
+
     private List<EntityDishes> GetDishesEntities(String JsonStr) throws JSONException {
 
         JSONArray dishesListJson = new JSONArray(JsonStr);
@@ -209,4 +257,5 @@ public class EntityDishes
         }
         return resultStrs;
     }
+
 }
