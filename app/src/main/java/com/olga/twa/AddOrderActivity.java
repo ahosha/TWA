@@ -47,11 +47,16 @@ public class AddOrderActivity extends AppCompatActivity {
     String DishName = "";
     String Price = "";
     String token = "" ;
+    String Description = "";
+    String URL = "" ;
 
     Button AddOrderButton = null;
     EditText OrderCOmment = null;
     EditText orderQuantity = null;
     TextView orderdetails = null;
+    TextView dishdescription = null;
+    TextView dishurl = null;
+    TextView dishprice = null;
 
     int AddOrder_LOADER_ID = 1;
 
@@ -61,28 +66,13 @@ public class AddOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_order);
 
-        Bundle extras = getIntent().getExtras();
-        token = (String) extras.get(MainActivity.ACTIVITY_SEC_TOKEN);
-        disheId = (String) extras.get(MainActivity.ACTIVITY_disheId);
-        TypeId = (String) extras.get(MainActivity.ACTIVITY_TypeId);
-        TableId = (String) extras.get(MainActivity.ACTIVITY_TableId);
-        Details = (String) extras.get(MainActivity.ACTIVITY_Details);
-        Quantity = (String) extras.get(MainActivity.ACTIVITY_Quantity);
-        DishName = (String) extras.get(MainActivity.ACTIVITY_DishName);
-        Price = (String) extras.get(MainActivity.ACTIVITY_Price);
+        GetExtras();
 
-        SharedPreferences preferences = getSharedPreferences(MainActivity.SHARED_PREF_KEY, MODE_PRIVATE);
-        token = preferences.getString(MainActivity.TOKEN_KEY,"");
-        Log.v(LOG_TAG, "token:"+token);
+        FindAllControls();
 
-        AddOrderButton = (Button) findViewById(R.id.bAddOrder);
-        OrderCOmment = (EditText) findViewById(R.id.dishcomment);
-        orderQuantity = (EditText) findViewById(R.id.dishQuantity);
-        orderdetails = (TextView) findViewById(R.id.orderdetails);
-
-        orderdetails.setText("Name: " + DishName + " Price:" + Price);
-
-
+        orderdetails.setText(DishName);
+        dishprice.setText(Price);
+        dishdescription.setText(Description);
 
 
         AddOrderButton.setOnClickListener(new View.OnClickListener() {
@@ -106,14 +96,41 @@ public class AddOrderActivity extends AppCompatActivity {
 
     }
 
+    private void GetExtras() {
+        Bundle extras = getIntent().getExtras();
+        token = (String) extras.get(MainActivity.ACTIVITY_SEC_TOKEN);
+        disheId = (String) extras.get(MainActivity.ACTIVITY_disheId);
+        TypeId = (String) extras.get(MainActivity.ACTIVITY_TypeId);
+        TableId = (String) extras.get(MainActivity.ACTIVITY_TableId);
+        Details = (String) extras.get(MainActivity.ACTIVITY_Details);
+        Quantity = (String) extras.get(MainActivity.ACTIVITY_Quantity);
+        DishName = (String) extras.get(MainActivity.ACTIVITY_DishName);
+        Price = (String) extras.get(MainActivity.ACTIVITY_Price);
+        Description = (String) extras.get(MainActivity.ACTIVITY_Dish_Description);
+        URL = (String) extras.get(MainActivity.ACTIVITY_Dish_URL);
 
+        SharedPreferences preferences = getSharedPreferences(MainActivity.SHARED_PREF_KEY, MODE_PRIVATE);
+        token = preferences.getString(MainActivity.TOKEN_KEY,"");
+        Log.v(LOG_TAG, "token:"+token);
 
+    }
+
+    private void FindAllControls() {
+        AddOrderButton = (Button) findViewById(R.id.bAddOrder);
+        OrderCOmment = (EditText) findViewById(R.id.dishcomment);
+        orderQuantity = (EditText) findViewById(R.id.dishQuantity);
+        orderdetails = (TextView) findViewById(R.id.orderdetails);
+        dishdescription = (TextView) findViewById(R.id.dishdescription);
+        dishprice = (TextView) findViewById(R.id.dishprice);
+        dishurl = (TextView) findViewById(R.id.dishurl);
+    }
 
 
     public static Intent createIntent(Context context, String disheId,
                                       String TypeId, String TableId,
                                       String Details, String Quantity,
-                                      String DishName, String Price) {
+                                      String DishName, String Price,
+                                      String description, String URL) {
         //Log.v(LOG_TAG, "table -> " + tableName + " tableId:" + tableId);
         Intent intent = new Intent(context, AddOrderActivity.class);
         intent.putExtra(MainActivity.ACTIVITY_disheId, disheId);
@@ -123,6 +140,8 @@ public class AddOrderActivity extends AppCompatActivity {
         intent.putExtra(MainActivity.ACTIVITY_Quantity, Quantity);
         intent.putExtra(MainActivity.ACTIVITY_DishName, DishName);
         intent.putExtra(MainActivity.ACTIVITY_Price, Price);
+        intent.putExtra(MainActivity.ACTIVITY_Dish_Description, description);
+        intent.putExtra(MainActivity.ACTIVITY_Dish_URL, URL);
 
         return intent;
 

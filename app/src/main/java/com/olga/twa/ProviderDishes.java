@@ -64,26 +64,29 @@ import java.sql.SQLException;
         }
         Log.v(LOG_TAG, "query before cursor uri:" + uri.toString());
         Cursor cursorDishes = twaDatabaseDishes.getDishes(id, projection, selection, selectionArgs, sortOrder);
-        Log.v(LOG_TAG, "get cursor from DB" + uri.toString());
+        Log.v(LOG_TAG, "get cursor from DB : " + uri.toString());
+        Log.v(LOG_TAG, "get cursor from DB : count -> " + cursorDishes.getCount());
+
         if(!cursorDishes.moveToFirst() || cursorDishes.getCount() == 0)
         {
             // get data from URL
             SharedPreferences preferences = getContext().getSharedPreferences(MainActivity.SHARED_PREF_KEY, getContext().MODE_PRIVATE);
             String authorization_value = preferences.getString(MainActivity.TOKEN_KEY,"");
-            Log.v(LOG_TAG, "authorization_value ->  " + authorization_value);
+            Log.v(LOG_TAG, "EMPTY cursor. get data from URL -> authorization_value ->  " + authorization_value);
             EntityDishes de = new EntityDishes();
             cursorDishes = de.getDishesCursorFormURL(authorization_value);
-            Log.v(LOG_TAG, "cursorDishes  from URL !!! ->  " + cursorDishes.getCount());
+            Log.v(LOG_TAG, "EMPTY cursor. get data from URL -> cursorDishes  from URL !!! ->  " + cursorDishes.getCount());
             if(cursorDishes.moveToFirst() || cursorDishes.getCount() != 0) {
                 try {
                     twaDatabaseDishes.bulkAddNewDish(cursorDishes);
-                    Log.v(LOG_TAG, "add data to DB ->  " + cursorDishes.getCount());
+                    Log.v(LOG_TAG, "EMPTY cursor. get data from URL -> add data to DB ->  " + cursorDishes.getCount());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
 
         }
+        Log.v(LOG_TAG, "retrun cursor. count:  " + cursorDishes.getCount());
         cursorDishes.setNotificationUri(getContext().getContentResolver(), uri);
         return cursorDishes;
 

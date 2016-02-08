@@ -53,7 +53,7 @@ public class LoaderDishes extends CursorLoader {
 /*        values.put(MyProvider.name, ((EditText) findViewById(R.id.txtName))
                 .getText().toString());*/
 
-        Log.v(LOG_TAG, "getContext().getContentResolver().query");
+        Log.v(LOG_TAG, "getContext().getContentResolver().query URI: " +  ContractDishes.CONTENT_URI);
 
         return getContext().getContentResolver().query(ContractDishes.CONTENT_URI,
                 new String[]{
@@ -61,7 +61,9 @@ public class LoaderDishes extends CursorLoader {
                     ContractDishes.Columns.DISHESNAME,
                     ContractDishes.Columns.DISHESDESCRIPTION,
                     ContractDishes.Columns.DISHESPRICE,
-                    ContractDishes.Columns.DISHESURL},
+                    ContractDishes.Columns.DISHESURL,
+                        ContractDishes.Columns.DISHESTYPE,
+                },
                 null, null, null, null);
     }
 

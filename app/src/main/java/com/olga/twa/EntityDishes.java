@@ -58,6 +58,21 @@ public class EntityDishes
 
     public EntityDishes(){}
 
+    public static EntityDishes newInstance(Cursor c, int position){
+        EntityDishes ld = null;
+        if(c.moveToPosition(position)) {
+            String _id = String.valueOf(c.getInt(c.getColumnIndex(ContractDishes.Columns._ID)));
+            String name = c.getString(c.getColumnIndex(ContractDishes.Columns.DISHESNAME));
+            String description = c.getString(c.getColumnIndex(ContractDishes.Columns.DISHESDESCRIPTION));
+            String price = String.valueOf(c.getDouble(c.getColumnIndex(ContractDishes.Columns.DISHESPRICE)));
+            String url = c.getString(c.getColumnIndex(ContractDishes.Columns.DISHESURL));
+            String type = String.valueOf(c.getInt(c.getColumnIndex(ContractDishes.Columns.DISHESTYPE)));
+            ld = new EntityDishes(_id, type, name, price, "", description, url);
+        }
+        return ld;
+    }
+
+
 
     public EntityDishes(String ID,
                         String DishType,

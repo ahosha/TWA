@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTIVITY_Quantity = "Quantity";
     public static final String ACTIVITY_DishName = "DishName";
     public static final String ACTIVITY_Price = "Price";
-
+    public static final String ACTIVITY_Dish_Description = "Description";
+    public static final String ACTIVITY_Dish_URL = "URL";
 
     public static final String TAMNOON_BASE_LOGIN_URL ="http://192.168.56.1/Ordersws/";
     public static final String TAMNOON_BASE_URL ="http://192.168.56.1/Ordersws/api/";

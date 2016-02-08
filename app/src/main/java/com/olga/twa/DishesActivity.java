@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class DishesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -39,10 +40,36 @@ public class DishesActivity extends AppCompatActivity implements LoaderManager.L
         dishesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EntityDishes dish = (EntityDishes) dishesAdapter.getItem(position);
-                //Toast.makeText(getApplicationContext(), "dish to send: " + Name + " + dish.ID"  + dish.ID, Toast.LENGTH_SHORT).show();
-                Intent intent = AddOrderActivity.createIntent(getApplicationContext(), dish.ID,
-                        dish.DishType, tableID, "", "", dish.Name, dish.Price);
+
+                Cursor c = (Cursor)dishesAdapter.getItem(position);
+                //Toast.makeText(getApplicationContext(), "onclick dishesListView Cursor Count: " + c.getCount() + " position:" + position +  " columns: " + c.getColumnCount(), Toast.LENGTH_SHORT).show();
+                //Log.v(LOG_TAG, "onclick dishesListView Cursor Count: " + c.getCount() + " position:" + position +  " columns: " + c.getColumnCount());
+
+                String name = c.getString(c.getColumnIndex(ContractDishes.Columns.DISHESNAME));
+                String did = String.valueOf(c.getInt(c.getColumnIndex(ContractDishes.Columns._ID)));
+                String type = String.valueOf(c.getInt(c.getColumnIndex(ContractDishes.Columns.DISHESTYPE)));
+                String description = c.getString(c.getColumnIndex(ContractDishes.Columns.DISHESDESCRIPTION));
+                String price = String.valueOf(c.getDouble(c.getColumnIndex(ContractDishes.Columns.DISHESPRICE)));
+                String url = c.getString(c.getColumnIndex(ContractDishes.Columns.DISHESURL));
+
+
+/*
+                Toast.makeText(getApplicationContext(), "DISHESNAME column id name:" + c.getColumnIndex(ContractDishes.Columns.DISHESNAME) + " did:" + c.getColumnIndex(ContractDishes.Columns._ID)
+                        + " type: " + c.getColumnIndex(ContractDishes.Columns.DISHESTYPE) + " description:" + c.getColumnIndex(ContractDishes.Columns.DISHESDESCRIPTION) + " price: "
+                        + c.getColumnIndex(ContractDishes.Columns.DISHESPRICE)
+                        + " url:" + c.getColumnIndex(ContractDishes.Columns.DISHESURL), Toast.LENGTH_SHORT).show();
+                Log.v(LOG_TAG, "DISHESNAME column id name:" + c.getColumnIndex(ContractDishes.Columns.DISHESNAME) + " did:" + c.getColumnIndex(ContractDishes.Columns._ID)
+                        + " type: " + c.getColumnIndex(ContractDishes.Columns.DISHESTYPE) + " description:" + c.getColumnIndex(ContractDishes.Columns.DISHESDESCRIPTION) + " price: "
+                        + c.getColumnIndex(ContractDishes.Columns.DISHESPRICE)
+                        + " url:" + c.getColumnIndex(ContractDishes.Columns.DISHESURL));
+                Toast.makeText(getApplicationContext(), "DISHESNAME :" + name + " did:" + did + " description:" + description + " price: "+ price
+                        + " url:" + url , Toast.LENGTH_SHORT).show();
+                Log.v(LOG_TAG, "DISHESNAME :" + name + " did:" + did + " description:" + description + " price: "+ price
+                        + " url:" + url);
+*/
+
+                Intent intent = AddOrderActivity.createIntent(getApplicationContext(), did,
+                        type , tableID, "", "", name, price, description , url);
                 startActivity(intent);
 
             }
