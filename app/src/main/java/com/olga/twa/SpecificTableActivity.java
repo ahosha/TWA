@@ -29,34 +29,36 @@ public class SpecificTableActivity extends AppCompatActivity implements LoaderMa
     Button AddButton;
     String tableId = "0";
     int ORDER_LIST_LOADER_ID = 1;
+    String tablename = null;
+
+    ListView orderListView = null;
+    TextView tableNameTextView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_specific_table);
 
+        GetAllControls();
+        getExtras();
+
         addListenerOnButton();
+        addListenerOnListView();
 
-        SharedPreferences preferences = getSharedPreferences(MainActivity.SHARED_PREF_KEY, MODE_PRIVATE);
-        token = preferences.getString(MainActivity.TOKEN_KEY, "");
-
-        Bundle extras = getIntent().getExtras();
-        String tablename = (String) extras.get(MainActivity.ACTIVITY_TABLE_NAME);
-        tableId = (String) extras.get(MainActivity.ACTIVITY_TABLE_ID);
-
-        TextView tableNameTextView = (TextView) findViewById(R.id.tableNameTextView);
         tableNameTextView.setText(tablename);
 
-
         ordersAdapter = new AdapterOrders(this, new ArrayList<EntityOrder>());
-        ListView orderListView = (ListView) findViewById(R.id.specifictablelistview);
         orderListView.setAdapter(ordersAdapter);
 
+        getSupportLoaderManager().restartLoader(ORDER_LIST_LOADER_ID, null, this);
+
+    }
+
+    private void addListenerOnListView() {
         orderListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 EntityOrder order = (EntityOrder) ordersAdapter.getItem(position);
-
                 Toast.makeText(getApplicationContext(), "order: " + order.tableNameID, Toast.LENGTH_SHORT).show();
 
 /*                Intent intent = SpecificTableActivity.createIntent(getApplicationContext(), table.tablename, table.tableid);
@@ -64,12 +66,29 @@ public class SpecificTableActivity extends AppCompatActivity implements LoaderMa
 
             }
         });
-        getSupportLoaderManager().initLoader(ORDER_LIST_LOADER_ID, null, this);
+    }
+
+    private void getExtras() {
+        SharedPreferences preferences = getSharedPreferences(MainActivity.SHARED_PREF_KEY, MODE_PRIVATE);
+        token = preferences.getString(MainActivity.TOKEN_KEY, "");
+
+        Bundle extras = getIntent().getExtras();
+        tablename = (String) extras.get(MainActivity.ACTIVITY_TABLE_NAME);
+        tableId = (String) extras.get(MainActivity.ACTIVITY_TABLE_ID);
+        return ;
+    }
+
+    private void GetAllControls() {
+        orderListView = (ListView) findViewById(R.id.specifictablelistview);
+        AddButton = (Button) findViewById(R.id.newOrderButton);
+        tableNameTextView =(TextView) findViewById(R.id.tableNameTextView);
+
+        return;
     }
 
     public void addListenerOnButton() {
 
-        AddButton = (Button) findViewById(R.id.newOrderButton);
+
 
         AddButton.setOnClickListener(new View.OnClickListener() {
 
@@ -86,8 +105,6 @@ public class SpecificTableActivity extends AppCompatActivity implements LoaderMa
         });
     }
 
-
-
     public static Intent createIntent(Context context, String tableName, String tableId){
         Log.v("SpecificTableActivity", "table -> " + tableName + " tableId:"+ tableId );
         Intent intent = new Intent(context, SpecificTableActivity.class);
@@ -95,7 +112,6 @@ public class SpecificTableActivity extends AppCompatActivity implements LoaderMa
         intent.putExtra(MainActivity.ACTIVITY_TABLE_ID, tableId);
         return intent;
     }
-
 
     @Override
     public Loader<List<EntityOrder>> onCreateLoader(int id, Bundle args) {

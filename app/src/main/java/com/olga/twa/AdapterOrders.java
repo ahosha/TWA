@@ -12,9 +12,9 @@ import android.widget.TextView;
 
 public class AdapterOrders extends BaseAdapter {
     private LayoutInflater inflater;
-    private List<EntityOrder> tables = new ArrayList<EntityOrder>();
-    public AdapterOrders(Context context, List<EntityOrder> tables) {
-        this.tables = tables;
+    private List<EntityOrder> oders = new ArrayList<EntityOrder>();
+    public AdapterOrders(Context context, List<EntityOrder> oders) {
+        this.oders = oders;
         inflater = LayoutInflater.from(context);
     }
 
@@ -22,11 +22,10 @@ public class AdapterOrders extends BaseAdapter {
     public View getView(int position, View view, ViewGroup parent) {
         EntityOrder order = (EntityOrder) getItem(position);
         if (view == null) {
-            view = inflater.inflate(R.layout.tabledata, null);
+            view = inflater.inflate(R.layout.orderdata, null);
         }
         TextView tablename = (TextView) view.findViewById(R.id.ordertime);
-        SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        tablename.setText(time_formatter.format(order.OrderDate) );
+        tablename.setText(order.OrderTime);
         TextView dishname = (TextView) view.findViewById(R.id.dishname);
         dishname.setText(order.DishName);
         TextView orderstatus = (TextView) view.findViewById(R.id.orderstatus);
@@ -37,7 +36,7 @@ public class AdapterOrders extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return tables.get(position);
+        return oders.get(position);
     }
 
     @Override
@@ -47,11 +46,11 @@ public class AdapterOrders extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return tables.size();
+        return oders.size();
     }
 
     public void setTables(List<EntityOrder> data) {
-        tables.addAll(data);
+        oders.addAll(data);
         notifyDataSetChanged();
     }
 }

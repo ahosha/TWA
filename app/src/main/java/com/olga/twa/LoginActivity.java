@@ -1,5 +1,6 @@
 package com.olga.twa;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.LoaderManager;
@@ -8,10 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     final int LOGIN_LOADER_ID = 1;
     final String IsLoadingStr = "isLoading";
+    AutoCompleteTextView emailTextView = null;
 
 
     @Override
@@ -33,12 +37,18 @@ public class LoginActivity extends AppCompatActivity {
         savedInstanceState.putString(IsLoadingStr, isLoading.toString());
     }
 
+    private void GetAllControls ()
+    {
+        emailTextView =(AutoCompleteTextView) findViewById(R.id.email);
+        LoginButton = (Button) findViewById(R.id.log_in_button);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        LoginButton = (Button) findViewById(R.id.log_in_button);
+
+        GetAllControls();
 
         if (savedInstanceState != null) {
             isLoading = savedInstanceState.getBoolean(IsLoadingStr);
@@ -48,6 +58,10 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
+        addEventHandlers2Controls();
+    }
+
+    private void addEventHandlers2Controls() {
         LoginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -61,8 +75,20 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         });
-    }
 
+        emailTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v == emailTextView) {
+                    if (hasFocus) {
+                        ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(emailTextView, InputMethodManager.SHOW_FORCED);
+                    } else {
+                        ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(emailTextView.getWindowToken(), 0);
+                    }
+                }
+            }
+        });
+    }
 
     private LoaderManager.LoaderCallbacks<List<EntityLogin>> LoginCallback = new LoaderManager.LoaderCallbacks<List<EntityLogin>>() {
 

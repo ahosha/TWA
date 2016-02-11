@@ -42,28 +42,36 @@ public class EntityOrder
 {
     private final String LOG_TAG = EntityOrder.class.getSimpleName();
 
+    String orderId = "";
     String disheId = "";
     String TypeId = "";;
     String TableId = "";
-    String Details = "";
     String Quantity = "";
     String DishName = "";
     String Price = "";
     String OrderStatus = "New";
+    String Details = "";
+    String DishOrderTime = "";
+
     SimpleDateFormat OrderDateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    Date OrderDate =  new Date (System.currentTimeMillis());
+    String OrderDate =  "" ; //new Date (System.currentTimeMillis());
+    String OrderTime =  "" ;
 
     final String OWM_LIST = "list";
 
     final String tableNameID = "Id";
-    final String tableNameDishType = "DishType";
-    final String tableNameName = "Name";
-    final String tableNamePrice = "Price";
-    final String tableNamePriceCurrency = "PriceCurrency";
-    final String tableNameDescription = "Description";
-    final String tableNameImageUrl = "ImageUrl";
-
-
+    final String order = "order";
+    final String OrderId = "OrderId";
+    final String logroot = "log";
+    final String DishOrderStatus = "OrderStatus";
+    final String dish = "dish";
+    final String dishIdname = "Id";
+    final String DishType = "DishType";
+    final String Name = "Name";
+    final String DishPrice = "Price";
+    final String AdditionalDetails = "AdditionalDetails";
+    final String dishOrderTime = "OrderTime";
+    final String dishTableId = "TableId";
 
     public EntityOrder(){}
 
@@ -85,20 +93,23 @@ public class EntityOrder
         this.Price = Price;
         this.OrderDateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm");//new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
         this.OrderStatus = "New" ;
-        this.OrderDate = new Date (System.currentTimeMillis());
+        this.OrderDate = ""; //new Date (System.currentTimeMillis());
 
     }
 
-    public EntityOrder(    String disheId ,
+    public EntityOrder(    String orderId ,
+                           String disheId ,
                            String TypeId ,
                            String TableId ,
                            String Details ,
                            String Quantity,
                            String DishName ,
                            String Price,
-                           long OrderTime,
+                           String OrderDate,
+                           String OrderTime,
                            String OrderStatus)
     {
+        this.orderId = orderId;
         this.disheId = disheId;
         this.TypeId = TypeId;;
         this.TableId = TableId;
@@ -106,7 +117,8 @@ public class EntityOrder
         this.Quantity = Quantity;
         this.DishName = DishName;
         this.Price = Price;
-        this.OrderDate = new Date (OrderTime);
+        this.OrderDate = OrderDate;
+        this.OrderTime = OrderTime;
         this.OrderStatus = OrderStatus ;
 
     }
@@ -132,8 +144,7 @@ public class EntityOrder
         postDataParams.put(MainActivity.PARAM_OrderAdditionalDetails, Details);
         postDataParams.put(MainActivity.PARAM_OrderQuantity, Quantity);
 
-
-        Log.v(LOG_TAG, "onCreateLoader before performPostCall-> ");
+        Log.v(LOG_TAG, "before performPostCall disheId-> " + disheId + "TypeId-> " + TypeId + "TableId-> " + TableId + "Details-> " + Details + "Quantity-> " + Quantity);
         performPostCall(urltopost, postDataParams, "bearer " + authorization_value );
         Log.v(LOG_TAG, "onCreateLoader after performPostCall-> ");
 
@@ -147,7 +158,7 @@ public class EntityOrder
         URL url;
         String response = "";
         try {
-            Log.v(LOG_TAG, "performPostCall 01 -> ");
+            Log.v(LOG_TAG, "performPostCall 01 -> requestURL "+requestURL);
             url = new URL(requestURL);
             Log.v(LOG_TAG, "performPostCall 011 -> ");
 
@@ -209,13 +220,13 @@ public class EntityOrder
 
 // ****************************************************************************************************
 
-    public List<EntityOrder> getOrdersListFormURL(String token, String tableId)
-    {
+    public List<EntityOrder> getOrdersListFormURL(String token, String tableId) {
         List<EntityOrder> list = null;
         String orderListJsonStr = getOrdersListDataJson(token,tableId);
+        Log.v(LOG_TAG, "getOrdersListFormURL  orderListJsonStr:" + orderListJsonStr);
         if (orderListJsonStr == null) return list;
         try {
-            list =  GetDishesEntities(orderListJsonStr);
+            list =  GeOrderEntities(orderListJsonStr);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -337,26 +348,48 @@ public class EntityOrder
         }
     }
 
-    private List<EntityOrder> GetDishesEntities(String JsonStr) throws JSONException {
+    private List<EntityOrder> GeOrderEntities(String JsonStr) throws JSONException {
 
-        JSONArray dishesListJson = new JSONArray(JsonStr);
+        JSONArray ordersListJson = new JSONArray(JsonStr);
         List<EntityOrder> resultStrs = new ArrayList<EntityOrder>();
-        //Log.v(LOG_TAG, "dishesListJson.length -> " +dishesListJson.length());
 
-        for(int i = 0; i < dishesListJson.length(); i++) {
-            /*
-            JSONObject disheObj = dishesListJson.getJSONObject(i);
-            //Log.v(LOG_TAG, "disheObj.toString() -> " + disheObj.toString());
-            ID = disheObj.getString(tableNameID);
-            DishType = disheObj.getString(tableNameDishType);
-            Name = disheObj.getString(tableNameName);
-            Price = disheObj.getString(tableNamePrice);
-            PriceCurrency = disheObj.getString(tableNamePriceCurrency);
-            Description = disheObj.getString(tableNameDescription);
-            ImageUrl = disheObj.getString(tableNameImageUrl);
-            resultStrs.add(new EntityOrder(ID, DishType, Name, Price, PriceCurrency, Description, ImageUrl));
-            */
-        }
+        for(int i = 0; i < ordersListJson.length(); i++) {
+           // Log.v(LOG_TAG, "1 ordersListJson.toString() -> " + ordersListJson.getJSONObject(i).toString());
+            JSONObject orderJson = ordersListJson.getJSONObject(i);
+            JSONObject orderDetailsJson =  orderJson.getJSONObject(order);
+            JSONObject logJson =  orderJson.getJSONObject(logroot);
+            JSONObject dishJson =  orderJson.getJSONObject(dish);
+            JSONObject tableJson =  orderJson.getJSONObject("table");
+/*            Log.v(LOG_TAG, "2 orderDetailsJson.toString() -> " + orderDetailsJson.toString());
+            Log.v(LOG_TAG, "2 logJson.toString() -> " + logJson.toString());
+            Log.v(LOG_TAG, "2 dishJson.toString() -> " + dishJson.toString());
+            Log.v(LOG_TAG, "2 tableJson.toString() -> " + tableJson.toString());*/
+
+            String orderId = orderDetailsJson.getString(OrderId);
+            String Details = orderDetailsJson.getString(AdditionalDetails);
+            String OrderDateTime = orderDetailsJson.getString(dishOrderTime);
+            String OrderStatus = logJson.getString(DishOrderStatus);
+            String dishId = dishJson.getString(dishIdname);
+            String TypeId = dishJson.getString(DishType);
+            String DishName = dishJson.getString(Name);
+            String Price = dishJson.getString(DishPrice);
+
+/*            Log.v(LOG_TAG, "3 orderId -> " + orderId);
+            Log.v(LOG_TAG, "3 Details -> " + Details);
+            Log.v(LOG_TAG, "3 OrderTime -> " + OrderTime);
+            Log.v(LOG_TAG, "3 OrderStatus -> " + OrderStatus);
+            Log.v(LOG_TAG, "3 dishId -> " + dishId);
+            Log.v(LOG_TAG, "3 TypeId -> " + TypeId);
+            Log.v(LOG_TAG, "3 DishName -> " + DishName);
+            Log.v(LOG_TAG, "3 Price -> " + Price);*/
+
+            String[] datetimeparts = OrderDateTime.split("T");
+
+            resultStrs.add(new EntityOrder(orderId, dishId, TypeId, TableId,Details, "1", DishName, Price, datetimeparts[0] , datetimeparts[1], OrderStatus));
+
+            }
+
+        Log.v(LOG_TAG, "4 resultStrs -> " + resultStrs.size());
         return resultStrs;
     }
 
